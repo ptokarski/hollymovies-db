@@ -1,0 +1,4 @@
+*.sqlite3
+.vscode/.ropeproject
+__pycache__/
+fixtures-dumped.json
