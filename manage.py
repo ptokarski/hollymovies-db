@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 
+from datetime import datetime
 from sqlite3 import connect
+from sys import stdout
 
 DB_FILENAME = 'db.sqlite3'
 
@@ -35,6 +37,21 @@ def main():
             "  'very good movie', DATETIME('now') "
             ")"
         )
+        cursor.execute('SELECT id, name FROM genre')
+        genres = cursor.fetchall()
+        for genre_id, genre_name in genres:
+            stdout.write(f'Genre {genre_id} is {genre_name}.\n')
+        cursor.execute(
+            'SELECT title, genre.name, released '
+            'FROM movie '
+            'JOIN genre ON movie.genre_id = genre.id'
+        )
+        movies = cursor.fetchall()
+        for title, genre, released in movies:
+            release_year = datetime.strptime(released, '%Y-%m-%d').year
+            stdout.write(
+                f'"{title}" is a {genre.lower()} released in {release_year}.\n'
+            )
         cursor.close()
 
 
