@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+from contextlib import contextmanager
 from datetime import datetime
 from sqlite3 import connect
 from sys import stdout
@@ -7,9 +8,18 @@ from sys import stdout
 DB_FILENAME = 'db.sqlite3'
 
 
-def main():
-    with connect(DB_FILENAME) as connection:
+@contextmanager
+def disposable_cursor(connection):
+    try:
         cursor = connection.cursor()
+        yield cursor
+    finally:
+        cursor.close()
+
+
+def main():
+    with connect(DB_FILENAME) as connection, \
+            disposable_cursor(connection) as cursor:
         cursor.execute(
             'CREATE TABLE genre ('
             '  id INTEGER NOT NULL, '
@@ -52,7 +62,6 @@ def main():
             stdout.write(
                 f'"{title}" is a {genre.lower()} released in {release_year}.\n'
             )
-        cursor.close()
 
 
 if __name__ == "__main__":
