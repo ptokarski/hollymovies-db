@@ -28,6 +28,13 @@ def main():
             '  FOREIGN KEY(genre_id) REFERENCES genre (id)'
             ')'
         )
+        cursor.execute("INSERT INTO genre VALUES (1, 'Drama')")
+        cursor.execute(
+            "INSERT INTO movie VALUES ("
+            "  1, 'The Shawshank Redemption', 1, 9, DATE('1994-01-01'), "
+            "  'very good movie', DATETIME('now') "
+            ")"
+        )
         cursor.close()
 
 
