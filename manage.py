@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 from sqlite3 import connect
-from sys import stdout
 
 DB_FILENAME = 'db.sqlite3'
 
@@ -9,9 +8,26 @@ DB_FILENAME = 'db.sqlite3'
 def main():
     with connect(DB_FILENAME) as connection:
         cursor = connection.cursor()
-        cursor.execute("SELECT 'Hello, world!'")
-        result, = cursor.fetchone()
-        stdout.write(f'{result}\n')
+        cursor.execute(
+            'CREATE TABLE genre ('
+            '  id INTEGER NOT NULL, '
+            '  name VARCHAR NOT NULL, '
+            '  PRIMARY KEY (id)'
+            ')'
+        )
+        cursor.execute(
+            'CREATE TABLE movie ('
+            '  id INTEGER NOT NULL, '
+            '  title VARCHAR(128) NOT NULL, '
+            '  genre_id INTEGER NOT NULL, '
+            '  rating INTEGER NOT NULL, '
+            '  released DATE NOT NULL, '
+            '  description VARCHAR, '
+            '  created DATETIME, '
+            '  PRIMARY KEY (id), '
+            '  FOREIGN KEY(genre_id) REFERENCES genre (id)'
+            ')'
+        )
         cursor.close()
 
 
