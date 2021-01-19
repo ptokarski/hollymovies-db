@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
+import sys
 from contextlib import contextmanager
 from datetime import datetime
 from sqlite3 import connect
-from sys import stdout
+from sys import argv, stdout
 
 DB_FILENAME = 'db.sqlite3'
 
@@ -68,12 +69,24 @@ def dump_data(cursor):
         )
 
 
+def parse_args():
+    '''Gets function to call based on provided argvs.'''
+    if len(argv) < 2:
+        sys.exit('No subcommand provided.')
+    if argv[1] == 'init':
+        return initialize_data_structures
+    if argv[1] == 'loaddata':
+        return load_data
+    if argv[1] == 'dumpdata':
+        return dump_data
+    sys.exit('Invalid subcommand provided.')
+
+
 def main():
     with connect(DB_FILENAME) as connection, \
             disposable_cursor(connection) as cursor:
-        initialize_data_structures(cursor)
-        load_data(cursor)
-        dump_data(cursor)
+        function_to_call = parse_args()
+        function_to_call(cursor)
 
 
 if __name__ == "__main__":
