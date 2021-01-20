@@ -18,7 +18,7 @@ def disposable_cursor(connection):
         cursor.close()
 
 
-def initialize_data_structures(cursor):
+def initialize_genre_table(cursor):
     cursor.execute(
         'CREATE TABLE genre ('
         '  id INTEGER NOT NULL, '
@@ -26,6 +26,9 @@ def initialize_data_structures(cursor):
         '  PRIMARY KEY (id)'
         ')'
     )
+
+
+def initialize_movie_table(cursor):
     cursor.execute(
         'CREATE TABLE movie ('
         '  id INTEGER NOT NULL, '
@@ -41,53 +44,74 @@ def initialize_data_structures(cursor):
     )
 
 
+def initialize_data_structures(cursor):
+    initialize_genre_table(cursor)
+    initialize_movie_table(cursor)
+
+
+def load_genre(cursor):
+    name = input('Get genre name: ')
+    cursor.execute(f"INSERT INTO genre (name) VALUES ('{name}')")
+    stdout.write(f'Id of added genre is {cursor.lastrowid}.\n')
+
+
+def load_movie(cursor):
+    title = input('Get movie title: ')
+    genre_id = input('Get movie genre id: ')
+    rating = input('Get movie rating: ')
+    released = input('Get movie release date: ')
+    description = input('Get movie description: ')
+    cursor.execute(
+        f"INSERT INTO movie ("
+        f"  title, genre_id, rating, released, description, created"
+        f") "
+        f"VALUES ("
+        f"  '{title}', {genre_id}, {rating}, '{released}', "
+        f"  '{description}', DATETIME('now') "
+        f")"
+    )
+    stdout.write(f'Id of added movie is {cursor.lastrowid}.\n')
+
+
 def load_data(cursor):
     table = input('What table you would like to add entry to? ')
     if table == 'genre':
-        name = input('Get genre name: ')
-        cursor.execute(f"INSERT INTO genre (name) VALUES ('{name}')")
-        stdout.write(f'Id of added genre is {cursor.lastrowid}.\n')
+        load_genre(cursor)
         return
     if table == 'movie':
-        title = input('Get movie title: ')
-        genre_id = input('Get movie genre id: ')
-        rating = input('Get movie rating: ')
-        released = input('Get movie release date: ')
-        description = input('Get movie description: ')
-        cursor.execute(
-            f"INSERT INTO movie ("
-            f"  title, genre_id, rating, released, description, created"
-            f") "
-            f"VALUES ("
-            f"  '{title}', {genre_id}, {rating}, '{released}', "
-            f"  '{description}', DATETIME('now') "
-            f")"
-        )
-        stdout.write(f'Id of added movie is {cursor.lastrowid}.\n')
+        load_movie(cursor)
         return
     sys.exit('Invalid choice.')
+
+
+def dump_genres(cursor):
+    cursor.execute('SELECT id, name FROM genre')
+    genres = cursor.fetchall()
+    for genre_id, genre_name in genres:
+        stdout.write(f'Genre {genre_id} is {genre_name}.\n')
+
+
+def dump_movies(cursor):
+    cursor.execute(
+        'SELECT title, genre.name, released '
+        'FROM movie '
+        'JOIN genre ON movie.genre_id = genre.id'
+    )
+    movies = cursor.fetchall()
+    for title, genre, released in movies:
+        release_year = datetime.strptime(released, '%Y-%m-%d').year
+        stdout.write(
+            f'"{title}" is a {genre.lower()} released in {release_year}.\n'
+        )
 
 
 def dump_data(cursor):
     table = input('What table you would like to dump? ')
     if table == 'genre':
-        cursor.execute('SELECT id, name FROM genre')
-        genres = cursor.fetchall()
-        for genre_id, genre_name in genres:
-            stdout.write(f'Genre {genre_id} is {genre_name}.\n')
+        dump_genres(cursor)
         return
     if table == 'movie':
-        cursor.execute(
-            'SELECT title, genre.name, released '
-            'FROM movie '
-            'JOIN genre ON movie.genre_id = genre.id'
-        )
-        movies = cursor.fetchall()
-        for title, genre, released in movies:
-            release_year = datetime.strptime(released, '%Y-%m-%d').year
-            stdout.write(
-                f'"{title}" is a {genre.lower()} released in {release_year}.\n'
-            )
+        dump_movies(cursor)
         return
     sys.exit('Invalid choice.')
 
