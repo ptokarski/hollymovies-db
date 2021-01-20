@@ -51,7 +51,7 @@ def initialize_data_structures(cursor):
 
 def load_genre(cursor):
     name = input('Get genre name: ')
-    cursor.execute(f"INSERT INTO genre (name) VALUES ('{name}')")
+    cursor.executescript(f"INSERT INTO genre (name) VALUES ('{name}')")
     stdout.write(f'Id of added genre is {cursor.lastrowid}.\n')
 
 
