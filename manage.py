@@ -42,13 +42,30 @@ def initialize_data_structures(cursor):
 
 
 def load_data(cursor):
-    cursor.execute("INSERT INTO genre VALUES (1, 'Drama')")
-    cursor.execute(
-        "INSERT INTO movie VALUES ("
-        "  1, 'The Shawshank Redemption', 1, 9, DATE('1994-01-01'), "
-        "  'very good movie', DATETIME('now') "
-        ")"
-    )
+    table = input('What table you would like to add entry to? ')
+    if table == 'genre':
+        name = input('Get genre name: ')
+        cursor.execute(f"INSERT INTO genre (name) VALUES ('{name}')")
+        stdout.write(f'Id of added genre is {cursor.lastrowid}.\n')
+        return
+    if table == 'movie':
+        title = input('Get movie title: ')
+        genre_id = input('Get movie genre id: ')
+        rating = input('Get movie rating: ')
+        released = input('Get movie release date: ')
+        description = input('Get movie description: ')
+        cursor.execute(
+            f"INSERT INTO movie ("
+            f"  title, genre_id, rating, released, description, created"
+            f") "
+            f"VALUES ("
+            f"  '{title}', {genre_id}, {rating}, '{released}', "
+            f"  '{description}', DATETIME('now') "
+            f")"
+        )
+        stdout.write(f'Id of added movie is {cursor.lastrowid}.\n')
+        return
+    sys.exit('Invalid choice.')
 
 
 def dump_data(cursor):
