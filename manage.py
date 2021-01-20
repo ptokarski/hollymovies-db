@@ -52,21 +52,27 @@ def load_data(cursor):
 
 
 def dump_data(cursor):
-    cursor.execute('SELECT id, name FROM genre')
-    genres = cursor.fetchall()
-    for genre_id, genre_name in genres:
-        stdout.write(f'Genre {genre_id} is {genre_name}.\n')
-    cursor.execute(
-        'SELECT title, genre.name, released '
-        'FROM movie '
-        'JOIN genre ON movie.genre_id = genre.id'
-    )
-    movies = cursor.fetchall()
-    for title, genre, released in movies:
-        release_year = datetime.strptime(released, '%Y-%m-%d').year
-        stdout.write(
-            f'"{title}" is a {genre.lower()} released in {release_year}.\n'
+    table = input('What table you would like to dump? ')
+    if table == 'genre':
+        cursor.execute('SELECT id, name FROM genre')
+        genres = cursor.fetchall()
+        for genre_id, genre_name in genres:
+            stdout.write(f'Genre {genre_id} is {genre_name}.\n')
+        return
+    if table == 'movie':
+        cursor.execute(
+            'SELECT title, genre.name, released '
+            'FROM movie '
+            'JOIN genre ON movie.genre_id = genre.id'
         )
+        movies = cursor.fetchall()
+        for title, genre, released in movies:
+            release_year = datetime.strptime(released, '%Y-%m-%d').year
+            stdout.write(
+                f'"{title}" is a {genre.lower()} released in {release_year}.\n'
+            )
+        return
+    sys.exit('Invalid choice.')
 
 
 def parse_args():
