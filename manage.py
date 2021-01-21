@@ -51,7 +51,7 @@ def initialize_data_structures(cursor):
 
 def load_genre(cursor):
     name = input('Get genre name: ')
-    cursor.executescript(f"INSERT INTO genre (name) VALUES ('{name}')")
+    cursor.execute(f"INSERT INTO genre (name) VALUES (?)", [name])
     stdout.write(f'Id of added genre is {cursor.lastrowid}.\n')
 
 
@@ -65,10 +65,8 @@ def load_movie(cursor):
         f"INSERT INTO movie ("
         f"  title, genre_id, rating, released, description, created"
         f") "
-        f"VALUES ("
-        f"  '{title}', {genre_id}, {rating}, '{released}', "
-        f"  '{description}', DATETIME('now') "
-        f")"
+        f"VALUES (?, ?, ?, ?, ?, DATETIME('now'))",
+        [title, genre_id, rating, released, description]
     )
     stdout.write(f'Id of added movie is {cursor.lastrowid}.\n')
 
