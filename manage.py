@@ -84,8 +84,7 @@ def load_data(cursor):
 
 def dump_genres(cursor):
     cursor.execute('SELECT id, name FROM genre')
-    genres = cursor.fetchall()
-    for genre_id, genre_name in genres:
+    for genre_id, genre_name in cursor:
         stdout.write(f'Genre {genre_id} is {genre_name}.\n')
 
 
@@ -95,8 +94,7 @@ def dump_movies(cursor):
         'FROM movie '
         'JOIN genre ON movie.genre_id = genre.id'
     )
-    movies = cursor.fetchall()
-    for title, genre, released in movies:
+    for title, genre, released in cursor:
         release_year = datetime.strptime(released, '%Y-%m-%d').year
         stdout.write(
             f'"{title}" is a {genre.lower()} released in {release_year}.\n'
